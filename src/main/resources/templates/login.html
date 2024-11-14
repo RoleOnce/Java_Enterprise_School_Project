@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link th:href="@{/css/login.css}" rel="stylesheet">
+</head>
+<body>
+<div class="login-container">
+    <!-- Header -->
+    <div class="header">
+        <h2>Welcome Back</h2>
+        <p>Please sign in to continue</p>
+    </div>
+
+    <!-- Login Form -->
+    <form th:action="@{/login}" method="post">
+        <!-- Username Input -->
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text"
+                   id="username"
+                   name="username"
+                   required>
+        </div>
+
+        <!-- Password Input -->
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password"
+                   id="password"
+                   name="password"
+                   required>
+        </div>
+
+        <!-- Remember Me and Forgot Password -->
+        <div class="remember-forgot">
+            <div class="remember-me">
+                <input type="checkbox"
+                       id="remember-me"
+                       name="remember-me">
+                <label for="remember-me">Remember me</label>
+            </div>
+            <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+
+        <!-- Login Button -->
+        <button type="submit" class="login-button">Sign in</button>
+    </form>
+
+    <!-- Sign Up Link -->
+    <div class="signup">
+        <span>Don't have an account?</span>
+        <a href="#">Sign up now</a>
+    </div>
+</div>
+</body>
+</html>
