@@ -1,4 +1,4 @@
-package org.roleonce.projektarbete_web_services.response;
+package org.roleonce.projektarbete_web_services.repository;
 
 import org.roleonce.projektarbete_web_services.model.CustomUser;
 import org.springframework.data.jpa.repository.JpaRepository;

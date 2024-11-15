@@ -40,6 +40,16 @@ body {
     margin-bottom: 1.5rem;
 }
 
+.error {
+    color: #842029;
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    text-align: left;
+}
+
 label {
     display: block;
     font-size: 0.875rem;

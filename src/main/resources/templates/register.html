@@ -27,6 +27,7 @@
                  th:errors="*{username}">
             </div>
         </div>
+        <div th:if="${usernameError}" th:text="${usernameError}" class="error"></div>
 
         <!-- Password Input -->
         <div class="form-group">
