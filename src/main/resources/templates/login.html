@@ -8,6 +8,9 @@
 </head>
 <body>
 <div class="login-container">
+    <div th:if="${param.deleted}" class="success-message">
+        Your account has been successfully deleted.
+    </div>
     <!-- Header -->
     <div class="header">
         <h2>Welcome Back</h2>
