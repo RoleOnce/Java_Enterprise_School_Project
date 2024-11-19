@@ -3,6 +3,8 @@ package org.roleonce.projektarbete_web_services.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.roleonce.projektarbete_web_services.model.CustomUser;
+import org.roleonce.projektarbete_web_services.model.Movie;
+import org.roleonce.projektarbete_web_services.repository.MovieRepository;
 import org.roleonce.projektarbete_web_services.repository.UserRepository;
 import org.roleonce.projektarbete_web_services.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +19,29 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.List;
+
 @Controller
 public class UserController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
+    private final MovieRepository movieRepository;
 
     @Autowired
-    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder, UserService userService) {
+    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder, UserService userService, MovieRepository movieRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userService = userService;
+        this.movieRepository = movieRepository;
     }
 
     @GetMapping("/")
-    public String index() {
-        return "index";
+    public String home(Model model) {
+        List<Movie> movies = movieRepository.findAll();
+        model.addAttribute("movies", movies);
+        return "home";
     }
 
     @GetMapping("/register")
