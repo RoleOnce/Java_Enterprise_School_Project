@@ -1,5 +1,6 @@
 package org.roleonce.projektarbete_web_services.config.security;
 
+import org.roleonce.projektarbete_web_services.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -7,9 +8,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.util.concurrent.TimeUnit;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final CustomUserDetailsService customUserDetailsService;
+
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+        this.customUserDetailsService = customUserDetailsService;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -27,9 +36,16 @@ public class SecurityConfig {
 
                 .logout(logoutConfigurer -> logoutConfigurer
                         .invalidateHttpSession(true)
-                        .clearAuthentication(true)      // TODO - Should Clear Authentication?
+                        .clearAuthentication(true)
                         .deleteCookies("remember-me", "JSESSIONID")
-                        .logoutUrl("/custom-logout")           // TODO - Endpoint for logging out?
+                        .logoutUrl("/custom-logout")
+                )
+
+                .rememberMe(rememberMeConfigurer -> rememberMeConfigurer
+                        .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
+                        .key("someSecureKey")
+                        .userDetailsService(customUserDetailsService)
+                        .rememberMeParameter("remember-me")
                 );
 
         return http.build();
