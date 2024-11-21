@@ -30,6 +30,9 @@ public class ApiService {
         this.movieRepository = movieRepository;
     }
 
+    // Example URL:
+    // https://api.themoviedb.org/3/movie/550?api_key=270c87c7d9febee8d8c0856291ff4572
+
     @Value("${api.key}")
     private String apiKey;
     final String apiUrl = "https://api.themoviedb.org/3/movie/";

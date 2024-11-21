@@ -41,6 +41,14 @@
             </div>
         </div>
 
+        <div class="form-group">
+            <label for="role">User Role</label>
+            <select id="role" th:field="*{userRole}" required>
+                <option value="USER">User</option>
+                <option value="ADMIN">Admin</option>
+            </select>
+        </div>
+
         <!-- Register Button -->
         <button type="submit" class="register-button">Create Account</button>
     </form>

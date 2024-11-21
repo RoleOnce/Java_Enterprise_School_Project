@@ -71,9 +71,13 @@ public class UserController {
             userRepository.save(
                     new CustomUser(
                             customUser.getUsername(),
-                            passwordEncoder.encode(customUser.getPassword()
-
-                            )));
+                            passwordEncoder.encode(customUser.getPassword()),
+                            customUser.getUserRole(),
+                            true,
+                            true,
+                            true,
+                            true
+                    ));
         } catch (DataIntegrityViolationException e) {
             model.addAttribute("usernameError", "Användarnamnet är redan taget.");
             return "register";
