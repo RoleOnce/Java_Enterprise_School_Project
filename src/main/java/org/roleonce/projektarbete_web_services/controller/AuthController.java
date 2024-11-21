@@ -20,7 +20,7 @@ public class AuthController {
         return "login";
     }
 
-    @GetMapping("/logout")
+    @GetMapping("/logout-user")
     public String showLogoutPage() {
         return "logout"; // returnerar logout.html
     }
