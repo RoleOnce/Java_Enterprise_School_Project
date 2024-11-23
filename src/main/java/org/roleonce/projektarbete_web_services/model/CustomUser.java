@@ -41,6 +41,11 @@ public class CustomUser {
         this.isEnabled = isEnabled;
     }
 
+    public CustomUser(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public Long getId() {
         return id;
     }

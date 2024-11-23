@@ -98,7 +98,8 @@ public class UserControllerTest {
         CustomUser user = new CustomUser("existingUser", "password123");
 
         when(bindingResult.hasErrors()).thenReturn(false);
-        when(userRepository.findByUsername("existingUser")).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername("existingUser")).thenReturn(Optional.of(new CustomUser("existingUser", "password123")));
+
 
         String viewName = userController.registerUser(user, bindingResult, model);
 
