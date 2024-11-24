@@ -1,5 +1,6 @@
 package org.roleonce.projektarbete_web_services.config.security;
 
+import org.roleonce.projektarbete_web_services.authorities.UserRole;
 import org.roleonce.projektarbete_web_services.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +30,9 @@ public class SecurityConfig {
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 ) // TODO - Ska det alltid vara en sessionId aktiverad??
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/api/**", "/register", "/login", "logout").permitAll()
+                        .requestMatchers("/api/**", "/register", "/login", "logout").permitAll()
                         .requestMatchers("/css/**").permitAll()
+                        .requestMatchers("/").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated())
 
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
