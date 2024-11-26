@@ -2,8 +2,10 @@ package org.roleonce.projektarbete_web_services.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.roleonce.projektarbete_web_services.authorities.UserRole;
 import org.roleonce.projektarbete_web_services.model.CustomUser;
 import org.roleonce.projektarbete_web_services.model.Movie;
+import org.roleonce.projektarbete_web_services.model.UserDTO;
 import org.roleonce.projektarbete_web_services.repository.MovieRepository;
 import org.roleonce.projektarbete_web_services.repository.UserRepository;
 import org.roleonce.projektarbete_web_services.service.UserService;
@@ -41,20 +43,20 @@ public class UserController {
     public String home(Model model) {
         List<Movie> movies = movieRepository.findAll();
         model.addAttribute("movies", movies);
-        return "home";
+        return "index";
     }
 
     @GetMapping("/register")
     public String registerUser(Model model) {
 
-        model.addAttribute("customUser", new CustomUser());
+        model.addAttribute("userDTO", new UserDTO());
 
         return "register";
     }
 
     @PostMapping("/register")
     public String registerUser(
-            @Valid @ModelAttribute(name = "customUser") CustomUser customUser,
+            @Valid @ModelAttribute(name = "userDTO") UserDTO userDTO,
             BindingResult bindingResult,
             Model model
     ) {
@@ -62,27 +64,27 @@ public class UserController {
             return "register";
         }
 
-        if (userRepository.findByUsername(customUser.getUsername()).isPresent()) {
+        if (userRepository.findByUsername(userDTO.getUsername()).isPresent()) {
             model.addAttribute("usernameError", "Username is already taken");
             return "register";
         }
 
         try {
-            userRepository.save(
-                    new CustomUser(
-                            customUser.getUsername(),
-                            passwordEncoder.encode(customUser.getPassword()),
-                            customUser.getUserRole(),
-                            true,
-                            true,
-                            true,
-                            true
-                    ));
+            CustomUser newUser = new CustomUser(
+                    userDTO.getUsername(),
+                    passwordEncoder.encode(userDTO.getPassword()),
+                    userDTO.getUserRole() != null ? userDTO.getUserRole() : UserRole.USER, // Sätt en standard roll om ingen anges
+                    true,
+                    true,
+                    true,
+                    true
+            );
+
+            userRepository.save(newUser);
         } catch (DataIntegrityViolationException e) {
             model.addAttribute("usernameError", "Användarnamnet är redan taget.");
             return "register";
         }
-
 
         return "redirect:/";
     }
