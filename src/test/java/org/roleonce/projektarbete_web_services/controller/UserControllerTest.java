@@ -2,10 +2,13 @@ package org.roleonce.projektarbete_web_services.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.roleonce.projektarbete_web_services.model.CustomUser;
 import org.roleonce.projektarbete_web_services.model.Movie;
+import org.roleonce.projektarbete_web_services.model.UserDTO;
 import org.roleonce.projektarbete_web_services.repository.MovieRepository;
 import org.roleonce.projektarbete_web_services.repository.UserRepository;
 import org.roleonce.projektarbete_web_services.service.UserService;
@@ -25,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class UserControllerTest {
 
     @Mock
@@ -52,9 +56,9 @@ public class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         userController = new UserController(userRepository, passwordEncoder, userService, movieRepository);
-        when(request.getSession()).thenReturn(session);
+
+        SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
@@ -64,59 +68,66 @@ public class UserControllerTest {
 
         String viewName = userController.home(model);
 
-        assertEquals("home", viewName);              // Assert 1
-        verify(model).addAttribute("movies", movies);   // Assert 2
+        assertEquals("index", viewName);
+        verify(model).addAttribute("movies", movies);
     }
 
     @Test
     void testRegisterGetEndpoint() {
-
         String viewName = userController.registerUser(model);
 
-        assertEquals("register", viewName);                         // Assert 3
-        verify(model).addAttribute(eq("customUser"), any(CustomUser.class));  // Assert 4
+        assertEquals("register", viewName);
+        verify(model).addAttribute(eq("userDTO"), any(UserDTO.class));
     }
 
     @Test
     void testRegisterUserWithValidCredentials() {
+        UserDTO user = new UserDTO("testUser", "password123");
 
-        CustomUser user = new CustomUser("testUser", "password123");
-
-        when(bindingResult.hasErrors()).thenReturn(false);
-        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
-        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
+        lenient().when(bindingResult.hasErrors()).thenReturn(false);
+        lenient().when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+        lenient().when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
 
         String viewName = userController.registerUser(user, bindingResult, model);
 
-        assertEquals("redirect:/", viewName);      // Assert 5
-        verify(userRepository).save(any(CustomUser.class));        // Assert 6
+        assertEquals("redirect:/", viewName);
+        verify(userRepository).save(any(CustomUser.class));
     }
 
     @Test
     void testRegisterUserWithExistingUsername() {
+        UserDTO user = new UserDTO("existingUser", "password123");
 
-        CustomUser user = new CustomUser("existingUser", "password123");
-
-        when(bindingResult.hasErrors()).thenReturn(false);
-        when(userRepository.findByUsername("existingUser")).thenReturn(Optional.of(new CustomUser("existingUser", "password123")));
-
+        lenient().when(bindingResult.hasErrors()).thenReturn(false);
+        lenient().when(userRepository.findByUsername("existingUser"))
+                .thenReturn(Optional.of(new CustomUser("existingUser", "password123")));
 
         String viewName = userController.registerUser(user, bindingResult, model);
 
-        assertEquals("register", viewName);                                                 // Assert 7
-        verify(model).addAttribute("usernameError", "Username is already taken"); // Assert 8
+        assertEquals("register", viewName);
+        verify(model).addAttribute("usernameError", "Username is already taken");
     }
 
     @Test
     void testDeleteUser() {
+        // Skapa en mock session explicit
+        HttpSession mockSession = mock(HttpSession.class);
 
-        when(securityContext.getAuthentication()).thenReturn(authentication);
+        // Se till att getSession() returnerar en mock-session
+        when(request.getSession()).thenReturn(mockSession);
+
+        // Förbered SecurityContext
         SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getName()).thenReturn("testUser");
 
         String viewName = userController.deleteUser(request);
 
-        assertEquals("redirect:/login?deleted=true", viewName);    // Assert 9
-        verify(userService).deleteUser("testUser");                      // Assert 10
+        assertEquals("redirect:/login?deleted=true", viewName);
+        verify(userService).deleteUser("testUser");
+        verify(mockSession).invalidate();
+
+        // Rensa SecurityContext efter testet
+        SecurityContextHolder.clearContext();
     }
 }

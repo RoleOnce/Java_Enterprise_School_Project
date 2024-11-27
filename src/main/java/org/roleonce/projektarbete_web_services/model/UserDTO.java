@@ -28,6 +28,11 @@ public class UserDTO {
         this.userRole = user.getUserRole();
     }
 
+    public UserDTO(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;

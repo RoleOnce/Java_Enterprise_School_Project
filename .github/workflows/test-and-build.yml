@@ -1,57 +1,46 @@
 name: Test and Build
 
-# Ange när workflow ska köras
 on:
   push:
     branches:
-      - master # Kör workflow på push till main
-  pull_request: # Kör workflow när en pull request skapas eller uppdateras
+      - master
+  pull_request:
     branches:
       - master
 
 jobs:
-  # Jobb för att testa applikationen
   test:
     runs-on: ubuntu-latest
 
     steps:
-      # Klona källkoden
       - name: Check out code
         uses: actions/checkout@v3
 
-      # Installera rätt version av JDK
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin' # Temurin JDK
-          java-version: '17' # Anpassa efter din applikation
+          distribution: 'temurin' # eller 'oracle' beroende på din föredragna distribution
+          java-version: '23' # Ändrad till 23
 
-      # Installera beroenden utan att köra tester
       - name: Install dependencies
         run: mvn install -DskipTests
 
-      # Kör tester
       - name: Run tests
         run: mvn test
 
-  # Jobb för att bygga Docker-image om tester lyckas
   build-docker:
     runs-on: ubuntu-latest
-    needs: test # Kör endast om test-jobbet lyckas
+    needs: test
 
     steps:
-      # Klona källkoden
       - name: Check out code
         uses: actions/checkout@v3
 
-      # Logga in på DockerHub (ersätt med GitHub Container Registry om du vill)
       - name: Log in to DockerHub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # Bygg Docker-image
       - name: Build Docker Image
         run: docker build -t roleonce/java_enterprise_school_projekt:latest .
 
-      # Push Docker-image till DockerHub
       - name: Push Docker Image
         run: docker push roleonce/java_enterprise_school_projekt:latest
