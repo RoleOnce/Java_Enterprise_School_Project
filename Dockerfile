@@ -1,19 +1,15 @@
-# Use an official OpenJDK runtime as a parent image
-FROM openjdk:23
+# Start från en OpenJDK-bild
+FROM openjdk:17
 
-# Set the working directory in the container
+# Sätt arbetskatalog
 WORKDIR /app
 
+# Kopiera JAR-filen från Maven byggkatalog (uppdaterat för att hantera eventuella namnvariationer)
 ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} /app/my-spring-boot-app.jar
 
-# Copy the JAR file into the container named /app and renames it to 'my-spring-app'
-COPY target/Projektarbete_Web_Services-0.0.1-SNAPSHOT.jar /app/my-spring-boot-app.jar
-
-# Expose the port that the application will run on (Must reflect Spring Boot's PORT)
+# Exponera porten (samma som i applikationen)
 EXPOSE 8443
 
-# Command to run the app
+# Starta applikationen
 ENTRYPOINT ["java", "-jar", "/app/my-spring-boot-app.jar"]
-
-# Example build code : docker build -t my-spring-boot-app .
-# Example run code : docker run -p 8443:8443 my-spring-boot-app
