@@ -1,46 +1,54 @@
-name: Test and Build
+name: Java CI with Gradle
 
 on:
   push:
-    branches:
-      - master
+    branches: [ "master" ]
   pull_request:
-    branches:
-      - master
+    branches: [ "master" ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
+          java-version: '17'
           distribution: 'temurin'
-          java-version: '17' # Ändra till rätt version
 
-      - name: Build Project
-        run: mvn clean package -DskipTests
+      - name: Set execute permission for gradlew
+        run: chmod +x ./gradlew
 
-      - name: Debug target directory
-        run: ls -l target
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
-  #build-docker:
-   # runs-on: ubuntu-latest
-    #needs: test
+      - name: Build with Gradle Wrapper
+        run: ./gradlew build
 
-    #steps:
-     # - name: Check out code
-      #  uses: actions/checkout@v3
+      # Build Dockerfile image
+      - name: Build Dockerfile Image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile  # Path to your Dockerfile
+          push: false  # Set to true if you want to push the image to Dockerfile Hub or another registry
+          tags: enterprise-project:latest  # Set your desired image name and tag
 
-      #- name: Log in to DockerHub
-       # run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Login to Dockerfile Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      #- name: Build Docker Image
-       # run: docker build --build-arg JAR_FILE=target/Java_Enterprise_School_Projekt-0.0.1-SNAPSHOT.jar -t roleonce/java_enterprise_school_projekt:latest .
-
-      #- name: Push Docker Image
-       # run: docker push roleonce/java_enterprise_school_projekt:latest
+      - name: Push Dockerfile image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: roleonce/my-spring-boot-app:latest

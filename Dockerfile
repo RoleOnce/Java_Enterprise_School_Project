@@ -1,15 +1,32 @@
-# Start från en OpenJDK-bild
-FROM openjdk:17
+# Use OpenJDK as the base image
+FROM openjdk:17-jdk-slim AS build
 
-# Sätt arbetskatalog
+# Set the working directory inside the container
 WORKDIR /app
 
-# Kopiera JAR-filen från Maven byggkatalog (uppdaterat för att hantera eventuella namnvariationer)
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} /app/my-spring-boot-app.jar
+# Copy the Gradle wrapper files and build script
+COPY gradlew .
+COPY gradle ./gradle
+COPY build.gradle settings.gradle ./
 
-# Exponera porten (samma som i applikationen)
+RUN chmod +x gradlew
+# Copy source code and build the project
+COPY src ./src
+
+# Build the application using Gradle
+RUN ./gradlew build --no-daemon
+
+# Use a smaller OpenJDK image for runtime
+FROM openjdk:17-jdk-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the jar file from the build stage
+COPY --from=build /app/build/libs/*.jar app.jar
+
+# Expose the port that the application will run on
 EXPOSE 8443
 
-# Starta applikationen
-ENTRYPOINT ["java", "-jar", "/app/my-spring-boot-app.jar"]
+# Command to run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
