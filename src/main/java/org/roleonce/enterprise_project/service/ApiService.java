@@ -33,7 +33,7 @@ public class ApiService {
     // Example URL:
     // https://api.themoviedb.org/3/movie/550?api_key=270c87c7d9febee8d8c0856291ff4572
 
-    @Value("${api.key}")
+    @Value("${API_KEY}")
     private String apiKey;
     final String apiUrl = "https://api.themoviedb.org/3/movie/";
 
@@ -157,6 +157,7 @@ public class ApiService {
         }
     }
 
+    /* Not in use anymore. Now used in >UserController<
     public ResponseEntity<WsResponse> saveMovieById(Long movieId) {
 
         String url = apiUrl + movieId + "?api_key=" + apiKey;
@@ -195,6 +196,7 @@ public class ApiService {
                     .body(new ErrorResponse("Service unavailable. Please check your network connection."));
         }
     }
+     */
 
     public ResponseEntity<WsResponse> updateMovieCredentialsById(Long movieId, @RequestBody Movie movie) {
 

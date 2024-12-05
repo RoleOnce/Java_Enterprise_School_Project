@@ -26,7 +26,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                ) // TODO - Ska det alltid vara en sessionId aktiverad??
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**", "/register", "/login", "/logout").permitAll()
                         .requestMatchers("/css/**").permitAll()

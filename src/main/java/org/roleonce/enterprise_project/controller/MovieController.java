@@ -58,11 +58,13 @@ public class MovieController {
         return apiService.postAReviewById(id, movie);
     }
 
+    /* Not in use anymore. Now used in >UserController<
     @PostMapping("/{id}/save")
     public ResponseEntity<WsResponse> saveMovie(@PathVariable Long id) {
 
         return apiService.saveMovieById(id);
     }
+     */
 
     @PutMapping("/{id}/update")
     public ResponseEntity<WsResponse> updateMovie(@PathVariable Long id, @RequestBody Movie movie) {

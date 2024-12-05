@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -39,6 +40,8 @@ public class UserControllerTest {
     @Mock
     private MovieRepository movieRepository;
     @Mock
+    private WebClient.Builder webClientBuilder;
+    @Mock
     private Model model;
     @Mock
     private BindingResult bindingResult;
@@ -55,7 +58,7 @@ public class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        userController = new UserController(userRepository, passwordEncoder, userService, movieRepository);
+        userController = new UserController(userRepository, passwordEncoder, userService, movieRepository, webClientBuilder);
 
         SecurityContextHolder.setContext(securityContext);
     }
