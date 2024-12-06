@@ -4,80 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Save Movie from TMDB</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .movie-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .error-message {
-            color: red;
-            font-size: 0.8em;
-        }
-        .success-message {
-            color: green;
-            margin-bottom: 15px;
-        }
-        .save-button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-    </style>
+    <link th:href="@{/css/save-movie.css}" rel="stylesheet">
 </head>
 <body>
-<div class="movie-container">
-    <h2>Save Movie from TMDB</h2>
+<div class="container">
+    <nav class="navbar">
+        <a th:href="@{/logout-user}" class="logout-button">Logout</a>
+        <a th:href="@{/save-movie}" class="save-button">Save Movie</a>
+    </nav>
+    <div class="movie-container">
 
-    <!-- Success Message -->
-    <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+        <h2>Save Movie from TMDB</h2>
 
-    <!-- Error Message -->
-    <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+        <!-- Success Message -->
+        <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
 
-    <!-- Movie Save Form -->
-    <form th:action="@{/save-movie}" th:object="${movieDTO}" method="post">
-        <!-- Movie ID Input -->
-        <div class="form-group">
-            <label for="movieId">TMDB Movie ID</label>
-            <input type="number"
-                   id="movieId"
-                   th:field="*{movieId}"
-                   required
-                   placeholder="Enter Movie ID from TMDB">
-            <div class="error-message" th:if="${#fields.hasErrors('movieId')}"
-                 th:errors="*{movieId}">
+        <!-- Error Message -->
+        <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+
+        <!-- Movie Save Form -->
+        <form th:action="@{/save-movie}" th:object="${movieDTO}" method="post">
+            <!-- Movie ID Input -->
+            <div class="form-group">
+                <label for="movieId">TMDB Movie ID</label>
+                <input type="number"
+                       id="movieId"
+                       th:field="*{movieId}"
+                       required
+                       placeholder="Enter Movie ID from TMDB">
+                <div class="error-message" th:if="${#fields.hasErrors('movieId')}"
+                     th:errors="*{movieId}">
+                </div>
             </div>
-        </div>
 
-        <!-- Save Movie Button -->
-        <button type="submit" class="save-button">Save Movie</button>
-    </form>
+            <!-- Save Movie Button -->
+            <button type="submit" class="save-button">Save Movie</button>
+        </form>
+    </div>
 </div>
+
 </body>
 </html>

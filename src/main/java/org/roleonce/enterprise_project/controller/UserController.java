@@ -53,7 +53,7 @@ public class UserController {
     public String home(Model model) {
         List<Movie> movies = movieRepository.findAll();
         model.addAttribute("movies", movies);
-        return "index";
+        return "home";
     }
 
     @GetMapping("/register")

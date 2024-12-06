@@ -13,7 +13,7 @@ public class UserDTO {
     private String username;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 4, max = 80, message = "Password must be between 4 and 80 characters")
+    @Size(min = 7, max = 80, message = "Password must be between 7 and 80 characters")
     private String password;
 
     private UserRole userRole;

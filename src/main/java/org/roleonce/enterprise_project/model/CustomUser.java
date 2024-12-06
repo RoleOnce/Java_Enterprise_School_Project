@@ -20,7 +20,7 @@ public class CustomUser {
     @Column(unique = true, nullable = false)
     private String username;
     @NotBlank
-    @Size(min = 4, max = 80)
+    @Size(min = 7, max = 80)
     private String password;
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Role is Required")
