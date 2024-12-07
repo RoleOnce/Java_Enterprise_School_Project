@@ -125,7 +125,7 @@ public class UserController {
 
     @GetMapping("/save-movie")
     public String showSaveMoviePage(Model model) {
-        model.addAttribute("movieDTO", new MovieDTO());
+        model.addAttribute("movieDTO", new MovieDTO(null));
         return "save-movie";
     }
 
@@ -134,7 +134,7 @@ public class UserController {
                             Model model,
                             RedirectAttributes redirectAttributes) {
         try {
-            String url = apiUrl + movieDTO.getMovieId() + "?api_key=" + apiKey;
+            String url = apiUrl + movieDTO.movieId() + "?api_key=" + apiKey;
 
             Movie movie = webClient.get()
                     .uri(url)
