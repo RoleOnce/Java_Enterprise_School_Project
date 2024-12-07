@@ -3,10 +3,7 @@ package org.roleonce.enterprise_project.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.roleonce.enterprise_project.authorities.UserRole;
-import org.roleonce.enterprise_project.model.CustomUser;
-import org.roleonce.enterprise_project.model.Movie;
-import org.roleonce.enterprise_project.model.MovieDTO;
-import org.roleonce.enterprise_project.model.UserDTO;
+import org.roleonce.enterprise_project.model.*;
 import org.roleonce.enterprise_project.repository.MovieRepository;
 import org.roleonce.enterprise_project.repository.UserRepository;
 import org.roleonce.enterprise_project.service.UserService;
@@ -59,7 +56,8 @@ public class UserController {
     @GetMapping("/register")
     public String registerUser(Model model) {
 
-        model.addAttribute("userDTO", new UserDTO());
+        model.addAttribute("userDTO", new UserDTO("", "", UserRole.USER));
+        model.addAttribute("roles", UserRole.values());
 
         return "register";
     }
@@ -71,19 +69,21 @@ public class UserController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("roles", UserRole.values());
             return "register";
         }
 
-        if (userRepository.findByUsername(userDTO.getUsername()).isPresent()) {
+        if (userRepository.findByUsername(userDTO.username()).isPresent()) {
             model.addAttribute("usernameError", "Username is already taken");
+            model.addAttribute("roles", UserRole.values());
             return "register";
         }
 
         try {
             CustomUser newUser = new CustomUser(
-                    userDTO.getUsername(),
-                    passwordEncoder.encode(userDTO.getPassword()),
-                    userDTO.getUserRole() != null ? userDTO.getUserRole() : UserRole.USER, // Sätt en standard roll om ingen anges
+                    userDTO.username(),
+                    passwordEncoder.encode(userDTO.password()),
+                    userDTO.userRole() != null ? userDTO.userRole() : UserRole.USER, // Sätt en standard roll om ingen anges
                     true,
                     true,
                     true,
@@ -92,7 +92,8 @@ public class UserController {
 
             userRepository.save(newUser);
         } catch (DataIntegrityViolationException e) {
-            model.addAttribute("usernameError", "Användarnamnet är redan taget.");
+            model.addAttribute("usernameError", "Username is already taken.");
+            model.addAttribute("roles", UserRole.values());
             return "register";
         }
 

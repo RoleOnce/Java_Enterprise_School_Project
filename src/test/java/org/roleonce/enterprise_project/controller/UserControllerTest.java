@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.roleonce.enterprise_project.authorities.UserRole;
 import org.roleonce.enterprise_project.model.CustomUser;
 import org.roleonce.enterprise_project.model.Movie;
 import org.roleonce.enterprise_project.model.UserDTO;
@@ -70,7 +71,7 @@ public class UserControllerTest {
 
         String viewName = userController.home(model);
 
-        assertEquals("index", viewName);
+        assertEquals("home", viewName);
         verify(model).addAttribute("movies", movies);
     }
 
@@ -84,7 +85,7 @@ public class UserControllerTest {
 
     @Test
     void testRegisterUserWithValidCredentials() {
-        UserDTO user = new UserDTO("testUser", "password123");
+        UserDTO user = new UserDTO("testUser", "password123", UserRole.USER);
 
         lenient().when(bindingResult.hasErrors()).thenReturn(false);
         lenient().when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
@@ -98,7 +99,7 @@ public class UserControllerTest {
 
     @Test
     void testRegisterUserWithExistingUsername() {
-        UserDTO user = new UserDTO("existingUser", "password123");
+        UserDTO user = new UserDTO("existingUser", "password123", UserRole.USER);
 
         lenient().when(bindingResult.hasErrors()).thenReturn(false);
         lenient().when(userRepository.findByUsername("existingUser"))

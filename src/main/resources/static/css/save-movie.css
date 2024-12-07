@@ -18,7 +18,7 @@ body {
     padding: 10px;
 }
 
-.logout-button, .save-button {
+.logout-button, .save-button, .home-button {
     padding: 10px 15px;
     background-color: #ff4d4d;
     color: white;
