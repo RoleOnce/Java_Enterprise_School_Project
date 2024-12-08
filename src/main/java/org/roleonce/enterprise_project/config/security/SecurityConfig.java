@@ -28,9 +28,10 @@ public class SecurityConfig {
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**", "/register", "/login", "/logout").permitAll()
+                        .requestMatchers("/register", "/login", "/movie/**").permitAll()
                         .requestMatchers("/css/**").permitAll()
                         .requestMatchers("/").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/deleteuser").hasRole("ADMIN")
                         .anyRequest().authenticated())
 
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer

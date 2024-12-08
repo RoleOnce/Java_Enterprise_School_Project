@@ -3,6 +3,7 @@ package org.roleonce.enterprise_project.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.roleonce.enterprise_project.authorities.UserRole;
+import org.roleonce.enterprise_project.dao.UserDAO;
 import org.roleonce.enterprise_project.model.*;
 import org.roleonce.enterprise_project.repository.MovieRepository;
 import org.roleonce.enterprise_project.repository.UserRepository;
@@ -10,6 +11,7 @@ import org.roleonce.enterprise_project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -32,14 +35,16 @@ public class UserController {
     private final UserService userService;
     private final MovieRepository movieRepository;
     private final WebClient webClient;
+    private final UserDAO userDAO;
 
     @Autowired
-    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder, UserService userService, MovieRepository movieRepository, WebClient.Builder webclientBuilder) {
+    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder, UserService userService, MovieRepository movieRepository, WebClient.Builder webclientBuilder, UserDAO userDAO) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userService = userService;
         this.movieRepository = movieRepository;
         this.webClient = webclientBuilder.build();
+        this.userDAO = userDAO;
     }
 
     @Value("${API_KEY}")
@@ -69,13 +74,17 @@ public class UserController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
+
             model.addAttribute("roles", UserRole.values());
+
             return "register";
         }
 
         if (userRepository.findByUsername(userDTO.username()).isPresent()) {
+
             model.addAttribute("usernameError", "Username is already taken");
             model.addAttribute("roles", UserRole.values());
+
             return "register";
         }
 
@@ -91,41 +100,63 @@ public class UserController {
             );
 
             userRepository.save(newUser);
+
         } catch (DataIntegrityViolationException e) {
+
             model.addAttribute("usernameError", "Username is already taken.");
             model.addAttribute("roles", UserRole.values());
+
             return "register";
+        }
+        return "redirect:/";
+    }
+
+    /*
+    @GetMapping("/delete-user")
+    public String showDeleteUserPage() {
+
+        return "delete-user";
+    }
+
+    @PostMapping("/delete-user")
+    public String deleteUser(HttpServletRequest request) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        userService.deleteUser(username);
+        SecurityContextHolder.clearContext();
+        request.getSession().invalidate();
+
+        return "redirect:/login?deleted=true";
+    }
+     */
+
+    @GetMapping("/deleteuser")
+    public String deleteUserGet() {
+
+        return "deleteuser";
+    }
+
+    @PostMapping("/deleteuser")
+    public String deleteUser(@RequestParam Long id, Model model) {
+
+        try {
+            userDAO.deleteById(id);
+            model.addAttribute("successMessage", "User with id " + id + " has been deleted.");
+        } catch (EmptyResultDataAccessException e) {
+            model.addAttribute("errorMessage", "User with id " + id + " not found.");
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "An error occurred while deleting the user.");
         }
 
         return "redirect:/";
     }
 
-    @GetMapping("/delete-user")
-    public String showDeleteUserPage() {
-        return "delete-user";
-    }
-
-    // Hanterar den faktiska borttagningen av användaren
-    @PostMapping("/delete-user")
-    public String deleteUser(HttpServletRequest request) {
-        // Hämta den inloggade användaren
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        // Ta bort användaren
-        userService.deleteUser(username);
-
-        // Logga ut användaren
-        SecurityContextHolder.clearContext();
-        request.getSession().invalidate();
-
-        // Redirecta till startsidan eller inloggningssidan
-        return "redirect:/login?deleted=true";
-    }
-
     @GetMapping("/save-movie")
     public String showSaveMoviePage(Model model) {
+
         model.addAttribute("movieDTO", new MovieDTO(null));
+
         return "save-movie";
     }
 
@@ -147,27 +178,27 @@ public class UserController {
                 return "save-movie";
             }
 
-            // Ensure movie overview length
             if (movie.getOverview().length() > 254) {
                 movie.setOverview(movie.getOverview().substring(0, 254));
             }
 
-            // Check for existing movie in the database
             Movie existingMovie = movieRepository.findById(movie.getId()).orElse(null);
             if (existingMovie != null) {
                 model.addAttribute("errorMessage", "Movie with this ID already exists in the database.");
                 return "save-movie";
             }
 
-            // Save movie
-            movie.setId(null); // Ensure it's treated as a new entity
+            movie.setId(null);
             movieRepository.save(movie);
 
             model.addAttribute("successMessage", "Movie saved successfully!");
+
             return "save-movie";
 
         } catch (Exception e) {
+
             model.addAttribute("errorMessage", "Error saving movie: " + e.getMessage());
+
             return "save-movie";
         }
     }

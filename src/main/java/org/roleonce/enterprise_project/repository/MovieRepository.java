@@ -10,11 +10,11 @@ import java.util.List;
 
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
+
     @Query("SELECT m FROM Movie m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Movie> findByTitle(@Param("title") String title);
     List<Movie> findByTitleAndOriginCountry(String title, List<String> originCountry);
-
     List<Movie> findAllByOrderByBudgetDesc();
-
     List<Movie> findAllByOrderByVoteAverageDesc();
+
 }
