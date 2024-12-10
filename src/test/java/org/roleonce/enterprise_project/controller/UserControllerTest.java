@@ -9,7 +9,7 @@ import org.roleonce.enterprise_project.authorities.UserRole;
 import org.roleonce.enterprise_project.dao.UserDAO;
 import org.roleonce.enterprise_project.model.CustomUser;
 import org.roleonce.enterprise_project.model.Movie;
-import org.roleonce.enterprise_project.model.UserDTO;
+import org.roleonce.enterprise_project.dto.UserDTO;
 import org.roleonce.enterprise_project.repository.MovieRepository;
 import org.roleonce.enterprise_project.repository.UserRepository;
 import org.roleonce.enterprise_project.service.UserService;

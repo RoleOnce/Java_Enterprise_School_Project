@@ -1,4 +1,4 @@
-package org.roleonce.enterprise_project.model;
+package org.roleonce.enterprise_project.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

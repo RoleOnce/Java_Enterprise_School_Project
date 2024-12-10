@@ -1,9 +1,10 @@
 package org.roleonce.enterprise_project.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.roleonce.enterprise_project.authorities.UserRole;
 import org.roleonce.enterprise_project.dao.UserDAO;
+import org.roleonce.enterprise_project.dto.MovieDTO;
+import org.roleonce.enterprise_project.dto.UserDTO;
 import org.roleonce.enterprise_project.model.*;
 import org.roleonce.enterprise_project.repository.MovieRepository;
 import org.roleonce.enterprise_project.repository.UserRepository;
@@ -12,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
