@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.roleonce.enterprise_project.authorities.UserRole;
+import org.roleonce.enterprise_project.dao.UserDAO;
 import org.roleonce.enterprise_project.model.CustomUser;
 import org.roleonce.enterprise_project.model.Movie;
 import org.roleonce.enterprise_project.model.UserDTO;
@@ -43,6 +44,8 @@ public class UserControllerTest {
     @Mock
     private WebClient.Builder webClientBuilder;
     @Mock
+    private UserDAO userDAO;
+    @Mock
     private Model model;
     @Mock
     private BindingResult bindingResult;
@@ -59,7 +62,7 @@ public class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        userController = new UserController(userRepository, passwordEncoder, userService, movieRepository, webClientBuilder);
+        userController = new UserController(userRepository, passwordEncoder, userService, movieRepository, webClientBuilder, userDAO);
 
         SecurityContextHolder.setContext(securityContext);
     }
@@ -113,24 +116,14 @@ public class UserControllerTest {
 
     @Test
     void testDeleteUser() {
-        // Skapa en mock session explicit
-        HttpSession mockSession = mock(HttpSession.class);
+        Model model = mock(Model.class);
 
-        // Se till att getSession() returnerar en mock-session
-        when(request.getSession()).thenReturn(mockSession);
+        doNothing().when(userDAO).deleteById(1L);
 
-        // Förbered SecurityContext
-        SecurityContextHolder.setContext(securityContext);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn("testUser");
+        String viewName = userController.deleteUser(1L, model);
 
-        String viewName = userController.deleteUser(request);
-
-        assertEquals("redirect:/login?deleted=true", viewName);
-        verify(userService).deleteUser("testUser");
-        verify(mockSession).invalidate();
-
-        // Rensa SecurityContext efter testet
-        SecurityContextHolder.clearContext();
+        assertEquals("redirect:/", viewName);
+        verify(userDAO).deleteById(1L);
+        verify(model).addAttribute("successMessage", "User with id 1 has been deleted.");
     }
 }
